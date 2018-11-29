@@ -26,7 +26,7 @@ stars <- stars %>%
   clean_names("snake") %>% 
   mutate_if(is.character, na_if, '') %>% 
   select(starvars)
-  
+
 # Northern hemisphere stars gathered by filter criteria
 stars.n <- stars %>% 
   filter(dec >= -20 & mag <= 5.5 & is.na(hip) == 0)
@@ -60,7 +60,7 @@ fetch_hips <- function(name) {
     clean_names("snake") %>% 
     filter(short == name) %>% 
     gather("key", "hip", -c("short", "features")) %>% 
-    select(hip) %>% 
+    select(short, hip) %>% 
     drop_na()
   
   return(const)
@@ -84,7 +84,11 @@ fetch_sticks <- function(data, hips) {
   return(const)
 }
 
-fetch_hips("Cen") %>% 
+fetch_hips("Aql") %>% 
   fetch_sticks()
+
+hips_list <- lapply(constellations$Short, fetch_hips)
+sticks_list <- lapply(hips_list, fetch_sticks)
+do.call(rbind, sticks_list)
 
 # More later...
